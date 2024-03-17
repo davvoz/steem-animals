@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzazione Accounts Steem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Black+Ops+One&family=Grenze+Gotisch:wght@100..900&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Indic+Siyaq+Numbers&family=Noto+Sans+Nabataean&family=Orbitron:wght@400..900&family=Sixtyfour&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gentium+Plus:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <!-- importa steem keychain -->
+    <script src="https://cdn.jsdelivr.net/gh/MattyIce/steem-keychain@master/dist/steem-keychain.js"></script>
+    <style>
+        :root {
+            --font-family: 'Roboto', sans-serif;
+            --font-size: 16px;
+            --font-color: #333;
+            --background-color: #fff;
+            --card-background-color: #f0f0f0;
+            --card-border-color: #e0e0e0;
+            --card-shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-goth {
+            --font-family: 'Grenze Gotisch', cursive;
+            --font-size: 16px;
+            --font-color: #fff;
+            /*fai un background gradient*/
+            --background-color: #000;
+            --card-background-color: #111;
+            --card-border-color: #222;
+            --card-shadow-color: rgba(0, 0, 0, 0.5);
+            --card-font-family: 'Noto Sans Indic Siyaq Numbers', sans-serif;
+        }
+
+        .theme-fantasy {
+            --font-family: 'Gentium Plus', serif;
+            --font-size: 16px;
+            --font-color: #8B4513;
+            /* saddlebrown */
+            --background-color: #F5DEB3;
+            /* wheat */
+            --card-background-color: #FFF8DC;
+            /* cornsilk */
+            --card-border-color: #D2B48C;
+            /* tan */
+            --card-shadow-color: rgba(0, 0, 0, 0.2);
+            --card-font-family: 'Noto Sans Indic Siyaq Numbers';
+        }
+
+        .theme-sci-fi {
+            --font-family: 'Orbitron', sans-serif;
+            --font-size: 16px;
+            --font-color: #0f0;
+            --background-color: #000;
+            --card-background-color: #111;
+            --card-border-color: #222;
+            --card-shadow-color: rgba(0, 0, 0, 0.5);
+            --card-font-family: 'Instrument Serif', sans-serif;
+        }
+
+        .theme-metro {
+            --font-family: 'Black Ops One', cursive;
+            --font-size: 16px;
+            --font-color: #fff;
+            --background-color: #000;
+            --card-background-color: #111;
+            --card-border-color: #222;
+            --card-shadow-color: rgba(0, 0, 0, 0.5);
+            --card-font-family: 'Noto Sans Indic Siyaq Numbers', sans-serif;
+        }
+        
+        .theme-psichedelic {
+            /*tema assurdo*/
+            --font-family: 'Impact', sans-serif;
+            --font-size: 16px;
+            --font-color: rgb(255, 200, 255);
+            --background-color: rgb(1, 36, 1);
+            --card-background-color: #f00;
+            --card-border-color: #00f;
+            --card-shadow-color: rgba(0, 0, 0, 0.5);
+            --card-font-family: 'Noto Sans Indic Siyaq Numbers', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size);
+            color: var(--font-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            width: 100%;
+            height: 100px;
+            /* Adjust height as needed */
+            background-color: var(--background-color);
+            color: var(--font-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.5s ease;
+            /* Aggiungi una transizione */
+        }
+
+        .header:hover {
+            background-color: #ddd;
+            /* Cambia il colore al passaggio del mouse */
+        }
+
+        .header .title {
+            font-family: var(--font-family);
+            font-size: 2rem;
+        }
+
+        .functions,
+        .cards-container {
+            width: 100%;
+            max-width: 1200px;
+            /* Adjust maximum width as needed */
+            padding: 1rem;
+        }
+
+        .functions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .functions button,
+        .functions select {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border: none;
+            background-color: var(--font-color);
+            color: var(--background-color);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            /* Aggiungi una transizione */
+        }
+
+        .functions button:hover,
+        .functions select:hover {
+            background-color: #555;
+            /* Cambia il colore al passaggio del mouse */
+        }
+
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .card {
+            width: 30em;
+            background-color: var(--card-background-color);
+            border: 1px solid var(--card-border-color);
+            box-shadow: 0 0 10px var(--card-shadow-color);
+            border-radius: 5px;
+            padding: 1rem;
+            transition: transform 0.3s ease;
+            /* Aggiungi una transizione */
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            /* Effetto di ingrandimento al passaggio del mouse */
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h2 {
+            margin: 0;
+        }
+
+        .card-body p {
+            margin: 0.5rem 0;
+        }
+
+        .card-body {
+            font-family: 'Noto Sans Indic Siyaq Numbers', sans-serif;
+        }
+
+        .card-button {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .card-button button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border: none;
+            background-color: var(--font-color);
+            color: var(--background-color);
+            cursor: pointer;
+            font-family: var(--font-family);
+            transition: background-color 0.3s ease;
+            /* Aggiungi una transizione */
+        }
+
+        .card-button button:hover {
+            background-color: #333;
+            /* Cambia il colore al passaggio del mouse */
+        }
+
+        .modal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            flex-direction: column;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 1);
+            font-size: large;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            font-size: larger;
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header h2 {
+            margin-top: 0;
+        }
+
+        .modal button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border: none;
+            background-color: var(--font-color);
+            color: var(--background-color);
+            cursor: pointer;
+            font-family: var(--font-family);
+            transition: background-color 0.3s ease;
+            /* Aggiungi una transizione */
+
+        }
+
+        .modal button:hover {
+            background-color: var(--card-border-color);
+            border: 1px solid var(--card-border-color);
+            /* Cambia il colore al passaggio del mouse */
+        }
+
+        /* Resto del tuo codice CSS rimane invariato */
+
+        /* Media query per dispositivi con larghezza massima di 768px */
+        @media only screen and (max-width: 768px) {
+            .functions {
+                flex-direction: column;
+                /* Cambia la direzione del layout */
+                align-items: center;
+            }
+
+            .functions button,
+            .functions select {
+                margin-top: 0.5rem;
+                /* Aggiungi spazio tra i pulsanti */
+            }
+
+            .cards-container {
+                padding: 0.5rem;
+                /* Riduci il padding */
+            }
+
+            .card {
+                width: 100%;
+                /* Fai sì che le carte occupino l'intera larghezza */
+            }
+        }
+
+        /* Media query per dispositivi con larghezza massima di 576px */
+        @media only screen and (max-width: 576px) {
+            .header {
+                height: 80px;
+                /* Riduci l'altezza dell'header */
+            }
+
+            .header .title {
+                font-size: 1.5rem;
+                /* Riduci la dimensione del titolo */
+            }
+
+            .functions button,
+            .functions select {
+                padding: 0.3rem 0.8rem;
+                /* Riduci il padding dei pulsanti */
+            }
+
+            .card {
+                padding: 0.8rem;
+                /* Riduci il padding delle carte */
+            }
+        }
+
+        .modal-body p {
+            margin: 0.5rem 0;
+            color: var(--font-color);
+        }
+
+        #usernameTitle {
+            font-family: var(--font-family);
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1 id="usernameTitle">Steem Animals</h1>
+    </div>
+    <div class="functions">
+        <button id="logWithExtension">Log with Steem Keychain</button>
+        <div class="theme">
+            <select id="theme">
+                <option value="standard">Standard</option>
+                <option value="goth">goth</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="sci-fi">Sci-fi</option>
+                <option value="metro">Metro</option>
+                <option value="psichedelic">Psichedelic</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="cards-container">
+        <!-- qui andranno le card -->
+    </div>
+
+    <script>
+        class SteemAccount {
+            constructor(data) {
+                this.id = data.id;
+                this.name = data.name;
+                this.json_metadata = JSON.parse(data.json_metadata);
+                this.reputation = this.calculateReputation(data.reputation);
+                this.created = new Date(data.created);
+                this.balance = data.balance;
+                this.sbd_balance = data.sbd_balance;
+                this.vesting_shares = data.vesting_shares;
+                this.delegated_vesting_shares = data.delegated_vesting_shares;
+                this.received_vesting_shares = data.received_vesting_shares;
+                this.voting_power = data.voting_power;
+                this.post_count = data.post_count;
+                this.can_vote = data.can_vote;
+                this.voting_manabar = data.voting_manabar;
+                this.downvote_manabar = data.downvote_manabar;
+                this.last_vote_time = new Date(data.last_vote_time);
+            }
+
+            calculateReputation(rep) {
+                if (rep == null) {
+                    return null;
+                }
+                let repString = String(rep);
+                const neg = repString.charAt(0) === '-';
+                repString = neg ? repString.substring(1) : repString;
+                const v = (Math.log10((neg ? -1 : 1) * repString) - 9);
+                return Math.max(v - 9, 0) * (neg ? -1 : 1);
+            }
+        }
+
+        class SteemAccountManager {
+            constructor(url, usernames) {
+                this.url = url;
+                this.usernames = usernames;
+            }
+
+            async fetchAccounts() {
+                const bodies = this.usernames.map(username => {
+                    return JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'condenser_api.get_accounts',
+                        params: [[username]],
+                        id: 1
+                    });
+                });
+
+                try {
+                    const responses = await Promise.all(bodies.map(body => fetch(this.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body
+                    })));
+
+                    const data = await Promise.all(responses.map(response => response.json()));
+
+                    data.forEach(response => {
+                        const account = new SteemAccount(response.result[0]);
+                        this.displayAccount(account);
+                    });
+                } catch (error) {
+                    console.error('Errore:', error);
+                }
+            }
+
+            displayAccount(account) {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.innerHTML = `
+            <div class="card-header">
+                <h2>${account.name}</h2>
+            </div>
+            <div class="card-body">
+                <p>Id: ${account.id}</p>
+                <p>Nome: ${account.name}</p>
+                <p>Reputazione: ${account.reputation}</p>
+                <p>Balance: ${account.balance}</p>
+                <p>Vesting shares: ${account.vesting_shares}</p>
+                <p>Delegated shares: ${account.delegated_vesting_shares}</p>
+                <p>Voting power: ${account.voting_power}</p>
+                <p>Voting manabar: ${account.voting_manabar}</p>
+                <p>sbd balance: ${account.sbd_balance}</p>
+            </div>
+            <div class="card-button">
+                <button onclick="goTo('https://steemit.com/@${account.name}')">Go ${account.name} Steemit</button>
+                <button onclick="goTo('https://upvu.org/@${account.name}')">Go ${account.name} UPVU</button>
+                <button onclick="calculateReputation('${account.name}')">Calcola reputazione</button>
+            </div>
+        `;
+                document.querySelector('.cards-container').appendChild(card);
+            }
+        }
+
+        const reputationModal = document.createElement('div');
+        reputationModal.innerHTML = `
+    <div class="modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h1>Reputazione</h1>
+            </div>
+            <div class="modal-body
+            ">
+                <p>La reputazione di luciojolly è 25</p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal()">X</button>
+            </div>
+        </div>
+    </div>
+    `;
+        function showModal(headerText, bodyHtml, footerHtml) {
+            const modal = document.createElement('div');
+            modal.classList.add('modal');
+            modal.innerHTML = `
+        <div class="modal-container">
+            <div class="modal-header">
+                <h1>${headerText}</h1>
+            </div>
+            <div class="modal-body">
+                ${bodyHtml}
+            </div>
+            <div class="modal-footer">
+                ${footerHtml}
+            </div>
+        </div>
+    `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.remove();
+            }
+        }
+
+        function goTo(url) {
+            const modalHeader = 'Conferma apertura nuova scheda';
+            const modalBody = `
+        <h2 style="color: red;">Attenzione! Stai per aprire una nuova scheda. Sei sicuro di voler procedere?</h2>
+        <h2>Url: ${url}</h2>
+    `;
+            const modalFooter = `
+        <button onclick="confirmGoTo('${url}')">Conferma</button>
+        <button onclick="closeModal()">Annulla</button>
+    `;
+            showModal(modalHeader, modalBody, modalFooter);
+        }
+
+        function calculateReputation(accountName) {
+            // Implementa il calcolo della reputazione
+            const reputation = 'TODO: implementare calcolo reputazione';
+
+            const modalHeader = `Reputazione di ${accountName}`;
+            const modalBody = `<p>La reputazione di ${accountName} è ${reputation}</p>`;
+            const modalFooter = '<button onclick="closeModal()">X</button>';
+            showModal(modalHeader, modalBody, modalFooter);
+        }
+
+        document.body.appendChild(reputationModal);
+
+        reputationModal.style.display = 'block';
+
+
+        function confirmGoTo(url) {
+            window.open(url, '_blank');
+            closeModal();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const url = 'https://api.steemit.com';
+            const usernames = ['luciojolly', 'mia.fobos', 'barley33', 'maintek', 'cryptobarman', 'yuky.skoll', 'wildnature1'];
+            const accountManager = new SteemAccountManager(url, usernames);
+            accountManager.fetchAccounts();
+        });
+
+        document.getElementById('logWithExtension').addEventListener('click', () => {
+            createModal('Log with Steem Keychain', 'You are about to log in with Steem Keychain. Are you sure you want to proceed?', 'Proceed', 'Cancel');
+        });
+
+        document.getElementById('theme').addEventListener('change', (event) => {
+            const theme = event.target.value;
+            document.body.classList.remove('theme-goth', 'theme-fantasy', 'theme-sci-fi', 'theme-metro', 'theme-psichedelic');
+            document.body.classList.add(`theme-${theme}`);
+        });
+
+        function createModal(headerText, bodyText, confirmText, cancelText) {
+            const modal = document.createElement('div');
+            modal.classList.add('modal');
+            modal.innerHTML = `
+        <div class="modal-container">
+            <div class="modal-header">
+                <h1>${headerText}</h1>
+            </div>
+            <div class="modal-body">
+                <input type="text" placeholder="Inserisci il tuo username" id="usernameInput">
+            </div>
+            <div class="modal-footer">
+                <button onclick="loginWithSteemKeychain(document.getElementById('usernameInput').value)">${confirmText}</button>
+                <button onclick="closeModal()">${cancelText}</button>
+            </div>
+        </div>
+    `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        // Funzione per effettuare il login
+        function loginWithSteemKeychain(username) {
+            const request = { type: 'login', username: username };
+
+            // Invia la richiesta a Steem Keychain
+            window.steem_keychain.requestHandshake(function () {
+                // Invia la richiesta di login a Steem Keychain
+                window.steem_keychain.requestCustomJson(username, 'login', 'Posting', JSON.stringify(request), 'Login with Steem Keychain', function (response) {
+                    // Controlla la risposta
+                    document.getElementById('usernameTitle').innerText = "Benvenuto su Steem Animals, " + username;
+
+                    const modal = document.querySelector('.modal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                        modal.remove();
+                    }
+                    if (response.success) {
+                        // Se la risposta è positiva, esegui il login
+                        closeModal();
+                    } else {
+                        // Altrimenti, mostra un messaggio di errore
+                        alert('Errore durante il login');
+                    }
+                });
+            });
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.remove();
+            }
+        }
+    </script>
+</body>
+
+</html>
